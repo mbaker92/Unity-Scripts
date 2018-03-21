@@ -21,7 +21,8 @@ public class Follow : MonoBehaviour {
 	void Start () {
 		if (MyPath == null)
         {
-            Debug.LogError("Need a path to follow");
+           
+            // No Path
             return;
         }
 
@@ -45,10 +46,12 @@ public class Follow : MonoBehaviour {
         {
             return;
         }
+        // Move towards point at steady speed
         if (type == MovementType.MoveTowards)
         {
             transform.position = Vector3.MoveTowards(transform.position, pointsinPath.Current.position, Time.deltaTime * speed);
         }
+        // Move towards point with Lerp
         else if(type == MovementType.LerpTowards)
         {
             transform.position = Vector3.Lerp(transform.position, pointsinPath.Current.position, Time.deltaTime * speed);
@@ -56,6 +59,8 @@ public class Follow : MonoBehaviour {
 
 
         var distanceSquared = (transform.position - pointsinPath.Current.position).sqrMagnitude;
+
+        // Go to next point if close enough to point.
         if( distanceSquared < MaxDistanceToGoal * MaxDistanceToGoal)
         {
             pointsinPath.MoveNext();

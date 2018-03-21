@@ -13,39 +13,43 @@ public class PathFollow : MonoBehaviour {
     public PathTypes Pathtype;
     public int movementDirection = 1;
     public int movingTo = 0;
-    public Transform[] PathSequence;
+    public Transform[] Path;
 
     // Draw path lines in editor to show the path
     public void OnDrawGizmos()
     {
-        if(PathSequence == null || PathSequence.Length < 2)
+        // If there is no path return
+        if(Path == null || Path.Length < 2)
         {
             return;
         }
-        for(var i=1;i<PathSequence.Length; i++)
+
+        // Draw a line between points in the editor
+        for(int i=1;i<Path.Length; i++)
         {
-            Gizmos.DrawLine(PathSequence[i - 1].position, PathSequence[i].position);
+            Gizmos.DrawLine(Path[i - 1].position, Path[i].position);
         }
 
+        // If the path loops, then draw a line from first position to the last position
         if(Pathtype == PathTypes.loop)
         {
-            Gizmos.DrawLine(PathSequence[0].position, PathSequence[PathSequence.Length - 1].position);
+            Gizmos.DrawLine(Path[0].position, Path[Path.Length - 1].position);
         }
     }
 
     public IEnumerator<Transform> GetNextPathPoint()
     {
-        if (PathSequence == null || PathSequence.Length < 1)
+        if (Path == null || Path.Length < 1)
         {
             yield break; // exit coroutine sequence length check fails.
         }
         while (true)
         {
             // return current point in pathsequence
-            yield return PathSequence[movingTo];
+            yield return Path[movingTo];
 
             // if only one point exit coroutine.
-            if(PathSequence.Length == 1)
+            if(Path.Length == 1)
             {
                 continue;
             }
@@ -55,21 +59,23 @@ public class PathFollow : MonoBehaviour {
                 if(movingTo <= 0)
                 {
                     movementDirection = 1;
-                }else if(movingTo >= PathSequence.Length - 1)
+                }else if(movingTo >= Path.Length - 1)
                 {
                     movementDirection = -1;
                 }
             }
             movingTo = movingTo + movementDirection;
+
+            // If Looping
             if(Pathtype == PathTypes.loop)
             {
-                if (movingTo >= PathSequence.Length)
+                if (movingTo >= Path.Length)
                 {
                     movingTo= 0;
                 }
                 if (movingTo < 0)
                 {
-                    movingTo = PathSequence.Length - 1;
+                    movingTo = Path.Length - 1;
                 }
                 }
             }
